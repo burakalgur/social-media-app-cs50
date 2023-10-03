@@ -1,0 +1,37 @@
+{% load static %}
+{% load custom_filters %}
+
+<li class="list-group-item post mb-3 mr-5" id="post-{{ post.id }}">
+    <div class="post-details">
+        <p class="card-text" id="post_content_{{ post.id }}">{{ post.content }}</p>
+        
+
+        
+        <form id="edit_form_{{ post.id }}" data-id="{{ post.id }}" style="display: none" data-url="{% url 'update' post.id %}">
+            {% csrf_token %}
+            <textarea class="form-control" name="content" rows="3">{{ post.content }}</textarea>
+            <div class="button-group d-flex">
+                <button type="button" data-id="{{ post.id }}" id="cancel_button_{{ post.id }}" class="btn btn-secondary close-button m-2">Close</button>
+                <button type="submit" class="btn btn-info save-button m-2" data-id="{{post.id}}" id="save-button">Save changes</button>
+            </div>
+        </form>
+
+        <div class="d-flex">
+            {% if request.user.is_authenticated %}
+                <button type="submit" class="btn btn-outline-danger like-button" data-post-id="{{ post.id }}" data-like-url="{% url 'like' post.id %}">
+                    <i class="{% if post|has_liked:user %} fas {% else %} far {% endif %} fa-heart icon-heart"></i>
+                    <span class="ms-2 like-count">{{ post.likes.count }}</span>
+                </button>
+            {% endif %}
+
+            {% if post.owner.id == user.id %}
+                <button class="btn btn-link edit-button" id="edit_link_{{ post.id }}" data-id="{{ post.id }}" data-toggle="modal">Edit</button>
+            {% endif %}
+            
+        </div>
+        
+
+        <p class="post-info">Posted by <a href="{% url 'profile' post.owner.id %}" class="post-owner">{{ post.owner.username }}</a> on <span class="post-timestamp">{{ post.timestamp | date:"h:i A d/m/Y" }}</span></p>
+
+    </div>
+</li>
